@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <chrono>
 #include <time.h>
+#include <sys/resource.h>
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include "benchmark.pb.h"
@@ -9,6 +10,7 @@
 const bool SEND = true;
 const bool RECEIVE = false;
 const uint32_t ITERATIONS = 1000;
+const int32_t CONVERSION_VALUE = 1024;
 
 using namespace std;
 
@@ -90,6 +92,10 @@ int main()
     printf("\n  Total CPU time : %ld nanoseconds\n", cpu_duration);
     printf("  Average CPU time per iteration: %0.2f nanoseconds\n",
            static_cast<float>(cpu_duration)/ITERATIONS);
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    printf("\n  Memory usage in kbytes: %ld\n", 
+           (usage.ru_maxrss/CONVERSION_VALUE));
     return 0;
 }
 

@@ -1,16 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <chrono>
-#include <vector>
-#include <string>
-#include <fstream>
 #include <time.h>
 #include <pb_encode.h>
 #include <pb_decode.h>
-#include <typeinfo>
 #include "benchmark.pb.h"
 
+const bool SEND = true;
+const bool RECEIVE = false;
+const uint32_t ITERATIONS = 1000;
+
 using namespace std;
+
+void print_contents(bool sent, int version, char *cmdkey, bool a1, float a2)
+{
+    printf("The contents of one packet %s are:\n", (sent)?"sent":"received");
+    printf("\n  {\"version\": %d, \"cmdkey\": \"%s\", ", version, cmdkey);
+    printf("\"attributes\":{\"a1\": %s, \"a2\": %f}}", (a1)?"true":"false", a2);
+    printf("\n\n");
+}
+
 
 int main()
 {
@@ -37,13 +46,13 @@ int main()
         return 1;
     }
     /* Print contents of sent message */
-    printf("The contents of one packet sent are:\n");
-    printf("\n{\"version\": %d, \"cmdkey\": \"%s\", ", o_command.version, o_command.cmdkey);
-    printf("\"attributes\":{\"a1\": %s, \"a2\": %f}}\n\n", (o_command.attributes.a1)?"true":"false", o_command.attributes.a2);
-    printf("%lu out of %lu available bytes written\n\n", message_length, o_stream.max_size);
+    print_contents(SEND, o_command.version, o_command.cmdkey,
+                   o_command.attributes.a1, o_command.attributes.a2);
+    printf("%lu out of %lu available bytes were written:\n\n", message_length,
+           o_stream.max_size);
     for (int i = 0; i < sizeof(buffer); i++)
     {
-        printf("%02x ", buffer[i]);
+        printf("  %02x", buffer[i]);
     }
     printf("\n\n");
     /* create receiving object */
@@ -58,16 +67,14 @@ int main()
         return 1;
     }
     /* Print contents of received message */
-    printf("The contents of one packet received are:\n\n");
-    printf("{\"version\": %d, \"cmdkey\": \"%s\", ", i_command.version, i_command.cmdkey);
-    printf("\"attributes\":{\"a1\": %s, \"a2\": %f}}\n\n", (i_command.attributes.a1)?"true":"false", i_command.attributes.a2);
+    print_contents(RECEIVE, i_command.version, i_command.cmdkey,
+                   i_command.attributes.a1, i_command.attributes.a2);
     printf("Now let's test 1000 iterations:\n");
     /* run 1000 iterations, track time */
     struct timespec start_spec, end_spec;
-    const unsigned int iterations = 1000;
     auto start = chrono::high_resolution_clock::now();
     int retval = clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_spec);
-    for (size_t i = 0; i < iterations; i++) 
+    for (size_t i = 0; i < ITERATIONS; i++) 
     {
         pb_encode(&o_stream, Command_fields, &o_command);
         pb_decode(&i_stream, Command_fields, &i_command);
@@ -77,10 +84,12 @@ int main()
     auto duration = chrono::duration_cast<chrono::nanoseconds>(finish - start).count();
     long cpu_duration = static_cast<long>(1e9) * (end_spec.tv_sec - start_spec.tv_sec) + end_spec.tv_nsec - start_spec.tv_nsec;
     /* print metrics */
-    printf("    Wall clock time: %lld nanoseconds\n", duration);
-    printf("        Average per iteration: %lld nanoseconds\n", duration/iterations);
-    printf("    CPU time : %ld nanoseconds\n", cpu_duration);
-    printf("        Averahge pr iteration: %ld nanoseconds\n", cpu_duration/iterations);
+    printf("\n  Total wall clock time: %lld nanoseconds\n", duration);
+    printf("  Average wall clock time per iteration: %0.2f nanoseconds\n",
+           static_cast<float>(duration)/ITERATIONS);
+    printf("\n  Total CPU time : %ld nanoseconds\n", cpu_duration);
+    printf("  Average CPU time per iteration: %0.2f nanoseconds\n",
+           static_cast<float>(cpu_duration)/ITERATIONS);
     return 0;
 }
 

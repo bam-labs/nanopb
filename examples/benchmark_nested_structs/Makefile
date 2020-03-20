@@ -4,7 +4,7 @@ include ../../extra/nanopb.mk
 # Compiler flags to enable all warnings & debug info
 CFLAGS = -Wall -Werror -g -O0
 CFLAGS += -I$(NANOPB_DIR)
-CXXFLAGS = -Wno-c++11-extensions #-std=c++11
+CXXFLAGS = -Wno-c++11-extensions
 
 CXXC = g++
 

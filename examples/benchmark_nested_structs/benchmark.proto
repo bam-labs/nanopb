@@ -10,7 +10,3 @@ message Command {
     string cmdkey = 2;
     attribute_msg attributes = 3;
 }
-
-message CppCommand {
-	string command = 1;
-}

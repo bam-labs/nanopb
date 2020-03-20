@@ -12,7 +12,4 @@ PB_BIND(attribute_msg, attribute_msg, AUTO)
 PB_BIND(Command, Command, AUTO)
 
 
-PB_BIND(CppCommand, CppCommand, AUTO)
-
-
 

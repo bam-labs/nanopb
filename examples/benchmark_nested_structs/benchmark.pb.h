@@ -14,10 +14,6 @@ extern "C" {
 #endif
 
 /* Struct definitions */
-typedef struct _CppCommand {
-    char command[128];
-} CppCommand;
-
 typedef struct _attribute_msg {
     bool a1;
     float a2;
@@ -34,13 +30,10 @@ typedef struct _Command {
 /* Initializer values for message structs */
 #define attribute_msg_init_default               {0, 0}
 #define Command_init_default                     {0, "", false, attribute_msg_init_default}
-#define CppCommand_init_default                  {""}
 #define attribute_msg_init_zero                  {0, 0}
 #define Command_init_zero                        {0, "", false, attribute_msg_init_zero}
-#define CppCommand_init_zero                     {""}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define CppCommand_command_tag                   1
 #define attribute_msg_a1_tag                     1
 #define attribute_msg_a2_tag                     2
 #define Command_version_tag                      1
@@ -62,24 +55,16 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  attributes,        3)
 #define Command_DEFAULT NULL
 #define Command_attributes_MSGTYPE attribute_msg
 
-#define CppCommand_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, STRING,   command,           1)
-#define CppCommand_CALLBACK NULL
-#define CppCommand_DEFAULT NULL
-
 extern const pb_msgdesc_t attribute_msg_msg;
 extern const pb_msgdesc_t Command_msg;
-extern const pb_msgdesc_t CppCommand_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define attribute_msg_fields &attribute_msg_msg
 #define Command_fields &Command_msg
-#define CppCommand_fields &CppCommand_msg
 
 /* Maximum encoded size of messages (where known) */
 #define attribute_msg_size                       7
 #define Command_size                             37
-#define CppCommand_size                          130
 
 #ifdef __cplusplus
 } /* extern "C" */

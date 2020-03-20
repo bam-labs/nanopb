@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message attribute_msg {
+	bool a1 = 1;
+	float a2 = 2;
+}
+
+message Command {
+    int32 version = 1;
+    string cmdkey = 2;
+    attribute_msg attributes = 3;
+}
+
+message CppCommand {
+	string command = 1;
+}

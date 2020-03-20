@@ -1,0 +1,2 @@
+Command.cmdkey   max_size:16
+CppCommand.command max_size:128
